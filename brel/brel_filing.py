@@ -45,6 +45,7 @@ Once a filing is loaded, it can be queried for its facts, report elements, netwo
 """
 
 import os
+import pickle
 import zipfile
 from typing import Callable, TypeGuard, cast
 
@@ -89,6 +90,14 @@ class Filing:
         :returns Filing: a #Filing object with the filing loaded.
         :raises ValueError: if the path is not a valid path.
         """
+        pickle_folder = os.path.join(os.path.expanduser("~"), ".brel_pickle")
+        pickle_file = os.path.join(pickle_folder, f"{os.path.basename(path)}.pickle")
+
+        if os.path.exists(pickle_file):
+            print(f"Loading cached filing from {pickle_file}")
+            with open(pickle_file, 'rb') as f:
+                return pickle.load(f)
+
         # check if the path is a folder or a file
 
         is_uri = path.startswith("http")
@@ -119,14 +128,14 @@ class Filing:
                 )
 
             parser = XMLFilingParser(xml_files)
-            return cls(parser)
+            filing = cls(parser)
         elif is_file and any(map(lambda x: x.endswith(".xml"), [path, *args])):
             paths = [path, *args]
             if DEBUG:  # pragma: no cover
                 print(f"Opening file {path}")
             xml_files = list(filter(lambda x: x.endswith(".xml"), paths))
             parser = XMLFilingParser(xml_files)
-            return cls(parser)
+            filing = cls(parser)
         elif is_file and path.endswith(".zip"):
             if DEBUG:  # pragma: no cover
                 print(f"Opening zip file {path}")
@@ -139,7 +148,7 @@ class Filing:
             print(f"Finished extracting...")
 
             xml_files = list(map(lambda x: os.path.join(dir_path, x), xml_files))
-            return cls.open(*xml_files)
+            filing = cls.open(*xml_files)
         elif is_uri:
             if not path.endswith(".xml"):
                 raise NotImplementedError("Brel currently only supports XBRL filings in the form of XML files")
@@ -155,10 +164,28 @@ class Filing:
 
             # open the file
             parser = XMLFilingParser([path])
-            return cls(parser)
+            filing = cls(parser)
 
         else:
             raise ValueError(f"{path} is not a valid path")
+
+        # Save the filing as a pickle file
+        os.makedirs(pickle_folder, exist_ok=True)
+        print(f"Caching filing to {pickle_file}")
+        with open(pickle_file, 'wb') as f:
+            pickle.dump(filing, f)
+
+        return filing
+
+    @classmethod
+    def clear_cache(cls, path):
+        pickle_folder = os.path.join(os.path.expanduser("~"), ".brel_pickle")
+        pickle_file = os.path.join(pickle_folder, f"{os.path.basename(path)}.pickle")
+        if os.path.exists(pickle_file):
+            print(f"Removing cached filing: {pickle_file}")
+            os.remove(pickle_file)
+        else:
+            print(f"No cached filing found at {pickle_file}")
 
     def __init__(self, parser: IFilingParser) -> None:
         # check if the parser is the right type
