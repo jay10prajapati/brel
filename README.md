@@ -2,6 +2,7 @@
 
 Brel is a Python library for reading and analyzing financial reports, such as balance sheets, income statements, cash flow statements, as well as sustainability repots.
 
+
 ## A bit of history and context
 
 Accounting has existed for thousands of years. Until 20 years ago, most reports were simply printed and distributed in books, or shared as PDF files. Many countries require that public companies listed on stock exchanges submit such quarterly financial reports including among others a balance sheet, an income statement, a cash flow statement.
