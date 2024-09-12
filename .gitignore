@@ -148,6 +148,7 @@ Arelle/
 .cspell/
 tests/interactive_data_test_suite/
 examples/sample_data/
+examples/sample_results/
 
 # pydoc markdown
 docs/content/

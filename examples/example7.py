@@ -16,7 +16,7 @@ def print_facts_in_network_order(node, facts_by_concept, indent=""):
         if concept_name in facts_by_concept:
             facts = facts_by_concept[concept_name]
             print(f"{indent}{concept_name}:")
-            brel.utils.pprint(facts)            
+            # brel.utils.pprint(facts)            
         else:
             print(f"{indent}{concept_name}: None")
     
@@ -27,7 +27,7 @@ def main():
     args = parse_arguments()
     args.component = "BalanceSheet_110000"
     args.component = "CashFlowStatement"
-    args.component = "613300"
+    # args.component = "613300"
 
     report = Filing.open(args.file)
     
