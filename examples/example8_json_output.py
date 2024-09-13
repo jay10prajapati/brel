@@ -70,7 +70,8 @@ def save_json_to_file(data, filename):
 def main():
     args = parse_arguments()
     args.component = "BalanceSheet_110000"
-    args.component = "CashFlowStatement"
+    # args.component = "CashFlowStatement"
+    # args.component = "CashFlowStatementIndirect_320000"
     # args.component = "613300"
 
     report = Filing.open(args.file)
@@ -103,10 +104,6 @@ def main():
         save_json_to_file(json_data, output_filename)
         print(f"Facts saved to {output_filename}")
 
-        # Print facts in network order (existing functionality)
-        # print("\nFacts in network order:")
-        # for root in presentation_network.get_roots():
-        #     print_facts_in_network_order(root, facts_by_concept)
 
     else:
         print(f"No component found with URI containing: {args.component}")
